@@ -6,9 +6,7 @@ app.use('/', routes);
 // app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.get("/", (req, res) => {
-  res.send("This is the Movie API. https://channelmyanmar.org/line-of-duty2019/ mmpuppet.herokuapp.com/movie/line-of-duty2019");
-});
+
 
 const port = process.env.PORT || 4000;
 
