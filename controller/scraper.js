@@ -106,6 +106,9 @@ exports.scrapeMovie = async (req, res) => {
                 const TWEET_TEXT_C = ".c";
                 tweet.size = elements[i].querySelector(TWEET_TEXT_C).textContent;
                
+                const TWEET_TEXT_D = ".d";
+                tweet.quality = elements[i].querySelector(TWEET_TEXT_D).textContent;
+                
                 ret.push(tweet);
             }
             return ret;
