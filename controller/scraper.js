@@ -175,3 +175,13 @@ exports.scrapeMovie = async (req, res) => {
         res.status(500).send(err.message);
     }
 };
+function oddStatus(i) {
+    // var url = i.split(")")[1];
+    //url = url.split(".")[1];
+    if (i.includes("H")) {
+        i = "Home";
+    } else if (i.includes("A")) {
+        i = "Away";
+    };
+    return i;
+};
