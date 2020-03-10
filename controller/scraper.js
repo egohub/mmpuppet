@@ -1,5 +1,55 @@
 const puppeteer = require('puppeteer');
+const cheerio = require('cheerio');
+exports.scrapeOdd = async (req, res) => {
+    try {
+        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const page = await browser.newPage();
+        await page.goto(process.env.BET_URL);
+        await page.waitFor(1000);
+        let content = await page.content();
+        let $ = cheerio.load(content);
+        let start = $('.GridBg1 .GridBg2 ').not('tbody[soclid="0"]')
+        console.log(start.length);
+        let mbet = [];
 
+        $(start).each(function(i, element) {
+            let  play = {};
+            var a = $(this).find('.GridItem')
+    
+            play.league = a.find('.L_Name ').text().trim();
+            play.live = $(this).find('.GridItem').children().hasClass('eventRun2');
+            play.matches = [];
+
+            var b = $(this).find('.MMGridItem');
+            $(this).find('.MMGridItem').each(function() {
+                var obj = {
+                    home: $(this).find('td').eq(1).text().split('-vs-')[0].trim(),
+                    away: $(this).find('td').eq(1).text().split('-vs-')[1].trim(),
+                    body: {
+                        hdp: $(this).find('td').eq(2).text().trim(),
+                        odd: Number($(this).find('td').eq(3).text()) || "",
+                        status: oddStatus($(this).find('td').eq(2).text().trim())
+                    },
+                    ftou: {
+                        ou: $(this).find('td').eq(5).text().trim(),
+                        odd: Number($(this).find('td').eq(6).text()) || ""
+                    }
+                };
+                play.matches.push(obj)
+            })
+            mbet.push(play);
+            
+        });
+        
+        // console.log(data);
+        res.send(mbet);
+
+        return mbet;
+    }
+    catch (err) {
+        res.status(500).send(err.message);
+    }
+}
 exports.scrapeMovies = async (req, res) => {
     let ret = [];
 
