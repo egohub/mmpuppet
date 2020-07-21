@@ -1,5 +1,40 @@
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
+
+exports.stream = async(req, res) => {
+    try {
+        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const page = await browser.newPage();
+        await page.goto('https://555sports.com/football');
+        const content = await page.content();
+        const $ = cheerio.load(content);
+        const matches = [];
+
+
+        $('.match-item').each((idx, elem) => {
+            let _href = $(elem).attr('href');
+            let href = _href.replace('/detail/', '');
+            const match = {
+                link: 'http://localhost:3001' + $(elem).attr('href'),
+                id: href,
+                league: $(elem).find('.top-box .name').text(),
+                time: $(elem).find('.text').text(),
+                teams: [{
+                    home: $(elem).find('.name-box .home').text(),
+                    away: $(elem).find('.name-box .away').text()
+                }]
+            }
+            console.log(match);
+            matches.push(match);
+            // return matches;
+        });
+        res.send(matches);
+        return matches;
+        await browser.close();
+    } catch (err) {
+        console.log(err.message);
+    }
+}
 exports.scrapeOdd = async (req, res) => {
     try {
         const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
